@@ -1,0 +1,1601 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hải Tiến 04/2026</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,700;1,700&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      :root {
+        --primary: #ff006e;
+        --accent: #ffbe0b;
+        --bg-soft: #fdf0ff;
+      }
+
+      body {
+        font-family: "Be Vietnam Pro", sans-serif;
+
+        /* 🌈 Gradient cực cháy */
+        background: linear-gradient(
+          135deg,
+          #ff9a9e 0%,
+          #fad0c4 20%,
+          #fbc2eb 40%,
+          #a6c1ee 60%,
+          #84fab0 80%,
+          #ffd86f 100%
+        );
+
+        background-size: 400% 400%;
+        animation: gradientMove 15s ease infinite;
+        background-attachment: fixed;
+        scroll-behavior: smooth;
+      }
+
+      /* ✨ Animation gradient chuyển động */
+      @keyframes gradientMove {
+        0% {
+          background-position: 0% 50%;
+        }
+        50% {
+          background-position: 100% 50%;
+        }
+        100% {
+          background-position: 0% 50%;
+        }
+      }
+
+      /* 🌈 Texture overlay nhẹ cho chiều sâu */
+      body::before {
+        content: "";
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+
+        background:
+          radial-gradient(
+            circle at 20% 20%,
+            rgba(255, 255, 255, 0.4),
+            transparent 40%
+          ),
+          radial-gradient(
+            circle at 80% 80%,
+            rgba(255, 255, 255, 0.3),
+            transparent 40%
+          );
+
+        pointer-events: none;
+        z-index: -1;
+      }
+
+      /* 🌴 Decoration màu nổi */
+      .pine-decoration {
+        position: fixed;
+        font-size: 15rem;
+        color: rgba(255, 0, 110, 0.08);
+        z-index: -1;
+        pointer-events: none;
+      }
+
+      /* ✨ Card sáng hơn, glow nhẹ */
+      .activity-card {
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        background: rgba(255, 255, 255, 0.85);
+        backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.5);
+      }
+
+      .activity-card:hover {
+        transform: translateY(-10px) scale(1.01);
+        box-shadow: 0 30px 60px -10px rgba(255, 0, 110, 0.25);
+      }
+
+      #editor-panel {
+        display: none;
+        height: calc(100vh - 80px);
+      }
+
+      .is-editing #editor-panel {
+        display: block;
+        z-index: 60;
+      }
+
+      .is-editing #preview-panel {
+        width: 66.666%;
+        margin-left: 33.333%;
+      }
+
+      .no-scrollbar::-webkit-scrollbar {
+        display: none;
+      }
+
+      /* 🌈 Glass nav đậm màu hơn */
+      .glass-nav {
+        background: rgba(255, 255, 255, 0.6);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.4);
+      }
+
+      @keyframes rotate-disk {
+        from {
+          transform: rotate(0deg);
+        }
+
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      .music-playing {
+        animation: rotate-disk 5s linear infinite;
+      }
+
+      .glass-nav {
+        background: rgba(255, 255, 255, 0.7);
+        backdrop-filter: blur(15px);
+      }
+
+      @media print {
+        .no-print {
+          display: none;
+        }
+
+        #preview-panel {
+          width: 100% !important;
+          margin: 0 !important;
+        }
+      }
+    </style>
+  </head>
+
+  <body class="text-slate-800">
+    <!-- Trang trí nền -->
+    <i class="fas fa-tree pine-decoration top-[-5%] left-[-5%] rotate-12"></i>
+    <i
+      class="fas fa-mountain pine-decoration bottom-[-5%] right-[-5%] -rotate-12"
+    ></i>
+
+    <!-- Music Toggle -->
+    <div class="fixed bottom-36 right-4 z-50 mb-2">
+      <button
+        onclick="toggleMusic()"
+        class="flex items-center gap-2 bg-white/90 backdrop-blur p-2 md:p-3 rounded-full shadow-xl hover:scale-110 transition"
+      >
+        <div
+          id="music-disk"
+          class="w-9 h-9 md:w-10 md:h-10 bg-green-800 text-white rounded-full flex items-center justify-center"
+        >
+          <i class="fas fa-music"></i>
+        </div>
+        <span
+          id="music-status"
+          class="hidden md:block text-xs font-bold text-slate-600"
+        >
+          Bật nhạc chill
+        </span>
+      </button>
+      <audio id="bg-music" loop>
+        <source
+          src="https://res.cloudinary.com/dpqknp0mo/video/upload/v1776095015/1_b7j3x5.mp4"
+          type="audio/mp4"
+        />
+      </audio>
+    </div>
+
+    <div class="fixed bottom-20 right-4 z-50 mb-2">
+      <button
+        onclick="openExpenseModal()"
+        class="flex items-center gap-2 bg-white/90 backdrop-blur p-2 md:p-3 rounded-full shadow-xl hover:scale-110 transition"
+      >
+        <div
+          class="w-9 h-9 md:w-10 md:h-10 bg-orange-500 text-white rounded-full flex items-center justify-center"
+        >
+          <i class="fas fa-plus text-lg"></i>
+        </div>
+
+        <span class="hidden md:block text-xs font-bold text-slate-600">
+          Ghi chi tiêu
+        </span>
+      </button>
+    </div>
+
+    <div class="fixed bottom-4 right-4 z-50 mb-2">
+      <button
+        onclick="goHome()"
+        class="flex items-center gap-2 bg-white/90 backdrop-blur p-2 md:p-3 rounded-full shadow-xl hover:scale-110 transition"
+      >
+        <div
+          class="w-9 h-9 md:w-10 md:h-10 bg-gray-500 text-white rounded-full flex items-center justify-center"
+        >
+          <i class="fas fa-arrow-left text-lg"></i>
+        </div>
+
+        <span class="hidden md:block text-xs font-bold text-slate-600">
+          Về Home
+        </span>
+      </button>
+    </div>
+
+    <div
+      id="expense-modal"
+      class="fixed inset-0 z-[100] hidden flex items-center justify-center p-4"
+    >
+      <div
+        class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm"
+        onclick="closeExpenseModal()"
+      ></div>
+
+      <div
+        class="relative bg-white rounded-[2.5rem] p-8 w-full max-w-md shadow-2xl scale-in-center"
+      >
+        <div class="flex justify-between items-center mb-8">
+          <h3 class="font-serif text-3xl italic font-bold text-slate-900">
+            Chi tiêu thực
+          </h3>
+          <button
+            onclick="closeExpenseModal()"
+            class="text-slate-400 hover:text-slate-600 transition"
+          >
+            <i class="fas fa-times text-2xl"></i>
+          </button>
+        </div>
+
+        <div class="space-y-5">
+          <div>
+            <label
+              class="text-[10px] font-black uppercase text-slate-800 ml-2 mb-1 block"
+              >Thời gian</label
+            >
+            <input
+              type="date"
+              id="ex-time"
+              placeholder="01-01-2026"
+              class="w-full px-5 py-4 rounded-2xl bg-slate-50 border-none focus:ring-2 focus:ring-orange-500 outline-none transition cursor-pointer"
+            />
+          </div>
+          <div>
+            <label
+              class="text-[10px] font-black uppercase text-slate-800 ml-2 mb-1 block"
+              >Người chi trả</label
+            >
+            <select
+              id="ex-payer"
+              class="w-full px-5 py-4 rounded-2xl bg-slate-50 border-none focus:ring-2 focus:ring-orange-500 outline-none transition cursor-pointer appearance-none"
+            >
+              <option value="" disabled selected>Chọn người trả...</option>
+              <option value="Anh">Hoàng Anh</option>
+              <option value="Linh">Thuỳ Linh</option>
+              <option value="Hieu">Khắc Hiếu</option>
+              <option value="Hah">Huyền Anh</option>
+              <option value="Chi">Linh Chi</option>
+              <option value="Quanh">Quỳnh Anh</option>
+              <option value="Dung">Kim Dung</option>
+              <option value="Dong">Đình Đông</option>
+            </select>
+          </div>
+          <div>
+            <label
+              class="text-[10px] font-black uppercase text-slate-800 ml-2 mb-1 block"
+              >Nội dung</label
+            >
+            <input
+              type="text"
+              id="ex-content"
+              placeholder="Về khoản gì"
+              class="w-full px-5 py-4 rounded-2xl bg-slate-50 border-none focus:ring-2 focus:ring-orange-500 outline-none transition"
+            />
+          </div>
+          <div>
+            <label
+              class="text-[10px] font-black uppercase text-slate-800 ml-2 mb-1 block"
+              >Số tiền (VNĐ)</label
+            >
+            <input
+              type="text"
+              id="ex-amount"
+              placeholder="Ví dụ: 500.000"
+              inputmode="numeric"
+              class="w-full px-5 py-4 rounded-2xl bg-slate-50 border-none focus:ring-2 focus:ring-orange-500 outline-none transition font-bold text-orange-600"
+            />
+          </div>
+          <div>
+            <label
+              class="text-[10px] font-black uppercase text-slate-800 ml-2 mb-2 block"
+              >Người tham gia chia tiền:</label
+            >
+            <div
+              id="participant-list"
+              class="grid grid-cols-3 gap-2 bg-slate-50 p-4 rounded-2xl"
+            >
+              <label
+                class="flex items-center gap-2 text-xs font-bold text-slate-800 cursor-pointer"
+              >
+                <input
+                  type="checkbox"
+                  value="Anh"
+                  checked
+                  class="rounded text-orange-500 focus:ring-orange-500"
+                />
+                Hoàng Anh
+              </label>
+              <label
+                class="flex items-center gap-2 text-xs font-bold text-slate-800 cursor-pointer"
+              >
+                <input
+                  type="checkbox"
+                  value="Linh"
+                  checked
+                  class="rounded text-orange-500 focus:ring-orange-500"
+                />
+                Thuỳ Linh
+              </label>
+              <label
+                class="flex items-center gap-2 text-xs font-bold text-slate-800 cursor-pointer"
+              >
+                <input
+                  type="checkbox"
+                  value="Hieu"
+                  checked
+                  class="rounded text-orange-500 focus:ring-orange-500"
+                />
+                Khắc Hiếu
+              </label>
+              <label
+                class="flex items-center gap-2 text-xs font-bold text-slate-800 cursor-pointer"
+              >
+                <input
+                  type="checkbox"
+                  value="Chi"
+                  checked
+                  class="rounded text-orange-500 focus:ring-orange-500"
+                />
+                Linh Chi
+              </label>
+              <label
+                class="flex items-center gap-2 text-xs font-bold text-slate-800 cursor-pointer"
+              >
+                <input
+                  type="checkbox"
+                  value="Dong"
+                  checked
+                  class="rounded text-orange-500 focus:ring-orange-500"
+                />
+                Đình Đông
+              </label>
+              <label
+                class="flex items-center gap-2 text-xs font-bold text-slate-800 cursor-pointer"
+              >
+                <input
+                  type="checkbox"
+                  value="Dung"
+                  checked
+                  class="rounded text-orange-500 focus:ring-orange-500"
+                />
+                Kim Dung
+              </label>
+              <label
+                class="flex items-center gap-2 text-xs font-bold text-slate-800 cursor-pointer"
+              >
+                <input
+                  type="checkbox"
+                  value="Hah"
+                  checked
+                  class="rounded text-orange-500 focus:ring-orange-500"
+                />
+                Huyền Anh
+              </label>
+              <label
+                class="flex items-center gap-2 text-xs font-bold text-slate-800 cursor-pointer"
+              >
+                <input
+                  type="checkbox"
+                  value="Quanh"
+                  checked
+                  class="rounded text-orange-500 focus:ring-orange-500"
+                />
+                Quỳnh Anh
+              </label>
+            </div>
+          </div>
+
+          <button
+            onclick="addExpense()"
+            class="w-full bg-orange-500 hover:bg-orange-600 text-white py-5 rounded-2xl font-black uppercase tracking-widest shadow-lg shadow-orange-200 transition-all mt-4"
+          >
+            Lưu
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div id="main-container" class="flex transition-all duration-500">
+      <div
+        id="editor-panel"
+        class="fixed left-0 top-20 w-1/3 bg-slate-900 p-4 border-r border-slate-700 overflow-hidden"
+      >
+        <textarea
+          id="json-input"
+          class="w-full h-full bg-slate-950 text-blue-300 font-mono text-xs p-5 rounded-xl border border-slate-800 focus:outline-none"
+        ></textarea>
+      </div>
+
+      <div
+        id="preview-panel"
+        class="w-full min-h-screen p-4 md:p-10 mx-auto max-w-6xl transition-all duration-500"
+      >
+        <!-- Team Section -->
+        <div class="mb-20 pt-10">
+          <div class="text-center mb-12 relative">
+            <div
+              class="absolute inset-0 flex items-center justify-center -z-10"
+            >
+              <span
+                class="text-8xl font-serif italic text-slate-200/50 select-none"
+                >Nghỉ mát mùa hè</span
+              >
+            </div>
+            <span
+              class="text-[10px] text-green-700 font-black uppercase tracking-[0.4em] mb-2 block"
+              >Hải Tiến 04/2026</span
+            >
+            <h2 class="font-serif text-5xl text-slate-900 italic font-bold">
+              Nhà Chunggg
+            </h2>
+          </div>
+
+          <div
+            id="team-container"
+            class="flex flex-wrap justify-center gap-10 items-end"
+          ></div>
+        </div>
+
+        <div
+          id="weather-widget"
+          class="mb-10 bg-white/40 backdrop-blur-xl rounded-[3rem] p-8 border border-white/50 shadow-lg relative overflow-hidden"
+        >
+          <div
+            class="flex flex-col md:flex-row justify-between items-center gap-6 mb-8 relative z-10"
+          >
+            <div class="flex items-center gap-6">
+              <div id="weather-icon" class="text-6xl text-slate-700">
+                <i class="fas fa-cloud-sun"></i>
+              </div>
+              <div>
+                <div class="flex items-center gap-2 mb-1">
+                  <span
+                    class="w-2 h-2 bg-green-500 rounded-full animate-ping"
+                  ></span>
+                  <span
+                    class="text-[10px] text-green-800 font-black uppercase tracking-widest"
+                    >Hải Tiến Live</span
+                  >
+                </div>
+                <div class="flex items-baseline gap-3">
+                  <span
+                    id="temp-display"
+                    class="text-6xl font-serif italic font-bold text-slate-900"
+                    >--°</span
+                  >
+                  <span
+                    id="weather-desc"
+                    class="text-lg text-slate-500 italic capitalize"
+                    >Đang tải...</span
+                  >
+                </div>
+              </div>
+            </div>
+
+            <div
+              class="flex gap-8 text-right border-l border-slate-300/30 pl-8"
+            >
+              <div>
+                <p class="text-[9px] text-slate-400 font-black uppercase mb-1">
+                  Độ ẩm
+                </p>
+                <p id="humidity" class="text-xl font-bold text-slate-700">
+                  --%
+                </p>
+              </div>
+              <div>
+                <p class="text-[9px] text-slate-400 font-black uppercase mb-1">
+                  Gió
+                </p>
+                <p id="wind-speed" class="text-xl font-bold text-slate-700">
+                  -- km/h
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div class="relative z-10 border-t border-slate-200/50 pt-6">
+            <div
+              id="hourly-forecast"
+              class="flex gap-8 overflow-x-auto pb-2 scrollbar-hide"
+              style="scrollbar-width: none; -ms-overflow-style: none"
+            ></div>
+          </div>
+
+          <i
+            class="fas fa-wind absolute right-[-20px] bottom-[-20px] text-9xl text-slate-100/50 -rotate-12 pointer-events-none"
+          ></i>
+
+          <div
+            id="weather-advice"
+            class="mt-6 pt-4 border-t border-slate-200/50 text-[14px] text-green-800 italic flex items-center justify-center gap-2"
+          >
+            <i class="fas fa-magic"></i>
+            <span>Đang tính toán trang phục phù hợp cho bạn...</span>
+          </div>
+        </div>
+
+        <!-- Stats -->
+        <div
+          id="hero-stats"
+          class="grid grid-cols-2 lg:grid-cols-4 gap-6 mb-16"
+        ></div>
+
+        <!-- Tabs -->
+        <div class="sticky top-4 z-40 mb-16">
+          <div
+            id="day-tabs"
+            class="flex gap-3 overflow-x-auto no-scrollbar bg-white/80 backdrop-blur-xl px-4 py-3 rounded-2xl shadow-md border border-white/50"
+          >
+            <!-- Tabs render bằng JS -->
+          </div>
+        </div>
+
+        <!-- Nơi ở -->
+        <div
+          class="mb-10 bg-white/40 backdrop-blur-xl rounded-[3rem] p-6 border border-white/50 shadow-lg overflow-hidden relative group"
+        >
+          <div class="flex flex-col md:flex-row gap-8 items-center">
+            <div
+              class="w-full md:w-1/3 h-48 rounded-[2rem] overflow-hidden shadow-inner relative"
+            >
+              <img
+                id="hotel-image"
+                src="https://bizweb.dktcdn.net/100/562/154/files/flamingo-hai-tien-50-1-jpg.jpg?v=1753087401910"
+                alt="Accommodation"
+                class="w-full h-full object-cover group-hover:scale-110 transition duration-700"
+              />
+              <div
+                class="absolute top-4 left-4 bg-white/90 backdrop-blur px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider text-green-800 shadow-sm"
+              >
+                <i class="fas fa-home mr-1"></i> Ở đây
+              </div>
+            </div>
+
+            <div class="flex-1 text-center md:text-left">
+              <h3
+                id="hotel-name"
+                class="font-serif text-3xl italic font-bold text-slate-900 mb-2"
+              >
+                Flamingo Ibiza Hai Tien
+              </h3>
+              <p
+                id="hotel-address"
+                class="text-slate-500 text-sm mb-4 flex items-center justify-center md:justify-start gap-2 italic"
+              >
+                <i class="fas fa-map-marker-alt text-red-400"></i>
+                Đường 510, Trường Giang, Hoằng Tiến, Thanh Hóa
+              </p>
+
+              <div class="flex flex-wrap justify-center md:justify-start gap-4">
+                <div
+                  class="bg-white/50 px-4 py-2 rounded-2xl border border-white/50"
+                >
+                  <p class="text-[9px] text-slate-400 font-black uppercase">
+                    Check-in
+                  </p>
+                  <p class="font-bold text-slate-700 text-sm">07/03 - 14:00</p>
+                </div>
+                <div
+                  class="bg-white/50 px-4 py-2 rounded-2xl border border-white/50"
+                >
+                  <p class="text-[9px] text-slate-400 font-black uppercase">
+                    Check-out
+                  </p>
+                  <p class="font-bold text-slate-700 text-sm">08/03 - 12:00</p>
+                </div>
+                <a
+                  href="https://maps.app.goo.gl/wQE3Fiy2gYh1u9Z36"
+                  class="bg-green-800/90 hover:bg-green-900 text-white px-6 py-2 rounded-2xl text-xs font-bold transition-all flex items-center gap-2 self-center"
+                >
+                  <i class="fas fa-directions"></i> Đường đến căn hộ
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Itinerary -->
+        <div id="itinerary-list" class="space-y-24 mb-24"></div>
+
+        <!-- Bảng số tiền thực -->
+        <div
+          id="expense-section"
+          class="scroll-mt-32 bg-white/60 backdrop-blur-xl rounded-[2rem] p-6 border border-white/50 shadow-xl overflow-hidden mb-20 relative"
+        >
+          <div
+            id="table-loading"
+            class="absolute inset-0 z-10 bg-white/40 backdrop-blur-[2px] hidden flex items-center justify-center transition-all duration-300"
+          >
+            <div class="flex flex-col items-center gap-3">
+              <i class="fas fa-spinner fa-spin text-orange-500 text-3xl"></i>
+              <span
+                class="text-[10px] font-black uppercase tracking-widest text-slate-500"
+                >Đang đồng bộ...</span
+              >
+            </div>
+          </div>
+
+          <h2
+            class="font-serif text-4xl text-slate-900 italic font-bold mb-8 text-center"
+          >
+            Chi tiêu thực
+          </h2>
+
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+              <thead>
+                <tr
+                  class="border-b border-slate-200 text-[11px] uppercase tracking-widest text-slate-800"
+                >
+                  <th class="py-4 px-2">STT</th>
+                  <th>Thời gian chi</th>
+                  <th>Tên người chi</th>
+                  <th>Nội dung chi</th>
+                  <th class="text-right">Số tiền chi</th>
+                  <th class="text-center px-4">#</th>
+                </tr>
+              </thead>
+
+              <tbody
+                id="expense-table-body"
+                class="font-medium text-[12px] text-slate-600"
+              ></tbody>
+
+              <tfoot
+                id="expense-footer"
+                class="border-t-2 border-slate-900"
+              ></tfoot>
+            </table>
+          </div>
+        </div>
+
+        <!-- Footer Image -->
+        <div
+          class="mt-24 rounded-3xl md:rounded-[4rem] overflow-hidden h-[300px] md:h-[500px] relative shadow-xl"
+        >
+          <img
+            id="footer-image"
+            src="https://res.cloudinary.com/dpqknp0mo/image/upload/v1772125043/9_nk8m9e.jpg"
+            class="w-full h-full object-cover scale-105"
+          />
+          <div
+            class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent flex items-center justify-center"
+          >
+            <h2
+              class="font-serif italic text-4xl md:text-6xl text-white font-bold"
+            >
+              Let's gooo!!!
+            </h2>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      let expenses = [];
+
+      const SCRIPT_URL =
+        "https://script.google.com/macros/s/AKfycbxVfhF7u19PY8vLDjxDVTVSADjjHI_EoLZBcNQtLXBzqJubaVVZsEUQ0YNhl_G6I9EO/exec";
+
+      // Hàm hiển thị/ẩn loading
+      function toggleTableLoading(show) {
+        const loader = document.getElementById("table-loading");
+        if (!loader) return;
+        if (show) {
+          loader.classList.remove("hidden");
+        } else {
+          loader.classList.add("hidden");
+        }
+      }
+
+      async function syncToGoogleSheets() {
+        toggleTableLoading(true); // BẬT LOADING
+        try {
+          await fetch(SCRIPT_URL, {
+            method: "POST",
+            body: JSON.stringify(expenses),
+          });
+          console.log("Đã đồng bộ lên Google Sheets");
+        } catch (error) {
+          console.error("Lỗi đồng bộ:", error);
+        } finally {
+          setTimeout(() => toggleTableLoading(false), 500); // TẮT LOADING
+        }
+      }
+
+      //Convert Datetime
+      function formatDate(dateStr) {
+        if (!dateStr) return "";
+
+        const date = new Date(dateStr);
+
+        if (isNaN(date)) return dateStr;
+
+        const day = String(date.getDate()).padStart(2, "0");
+        const month = String(date.getMonth() + 1).padStart(2, "0");
+        const year = date.getFullYear();
+
+        return `${day}-${month}-${year}`;
+      }
+
+      // Form điền tiền thực
+      window.onload = async function () {
+        toggleTableLoading(true);
+
+        try {
+          const response = await fetch(SCRIPT_URL);
+          const cloudData = await response.json();
+
+          if (cloudData && cloudData.length > 0) {
+            expenses = cloudData;
+            localStorage.setItem("tripExpenses", JSON.stringify(expenses));
+          } else {
+            const savedData = localStorage.getItem("tripExpenses");
+            if (savedData) {
+              expenses = JSON.parse(savedData);
+            }
+          }
+
+          updateExpenseTable();
+
+          if (expenses.length > 0) {
+            document
+              .getElementById("expense-section")
+              .classList.remove("hidden");
+          }
+        } catch (e) {
+          console.warn("Cloud lỗi → dùng local");
+          const savedData = localStorage.getItem("tripExpenses");
+          if (savedData) {
+            expenses = JSON.parse(savedData);
+            updateExpenseTable();
+          }
+        } finally {
+          toggleTableLoading(false);
+        }
+      };
+
+      setInterval(async () => {
+        try {
+          const res = await fetch(SCRIPT_URL);
+          const cloudData = await res.json();
+
+          if (JSON.stringify(cloudData) !== JSON.stringify(expenses)) {
+            expenses = cloudData;
+            localStorage.setItem("tripExpenses", JSON.stringify(expenses));
+            updateExpenseTable();
+          }
+        } catch {}
+      }, 8000);
+
+      const groupMembers = [
+        "Anh",
+        "Linh",
+        "Hieu",
+        "Chi",
+        "Dong",
+        "Dung",
+        "Hah",
+        "Quanh",
+      ];
+
+      function openExpenseModal() {
+        const modal = document.getElementById("expense-modal");
+        if (modal) {
+          modal.classList.remove("hidden");
+          document.getElementById("ex-time").focus();
+        }
+      }
+
+      function closeExpenseModal() {
+        const modal = document.getElementById("expense-modal");
+        if (modal) modal.classList.add("hidden");
+      }
+
+      async function addExpense() {
+        const time = document.getElementById("ex-time").value;
+        const payer = document.getElementById("ex-payer").value.trim();
+        const content = document.getElementById("ex-content").value;
+        const amountInput = document.getElementById("ex-amount").value;
+        const amountRaw = document.getElementById("ex-amount").value;
+        const amount = parseFloat(amountRaw.replace(/[^\d]/g, ""));
+
+        const checkboxes = document.querySelectorAll(
+          '#participant-list input[type="checkbox"]:checked',
+        );
+        const participants = Array.from(checkboxes).map((cb) => cb.value);
+
+        if (
+          !time ||
+          !payer ||
+          isNaN(amount) ||
+          amount <= 0 ||
+          participants.length === 0
+        ) {
+          alert("Vui lòng nhập đủ thông tin nhé!");
+          return;
+        }
+
+        const perPersonForThis = amount / participants.length;
+
+        expenses.push({
+          time,
+          payer,
+          content,
+          amount,
+          participants,
+          perPerson: perPersonForThis,
+        });
+
+        // --- ƯU TIÊN CẬP NHẬT GIAO DIỆN TRƯỚC ---
+        document.getElementById("expense-section").classList.remove("hidden");
+        updateExpenseTable(); // Vẽ bảng ngay lập tức để người dùng thấy
+        closeExpenseModal();
+        document.getElementById("ex-amount").value = "";
+
+        // --- LƯU TRỮ SAU ---
+        localStorage.setItem("tripExpenses", JSON.stringify(expenses));
+        await syncToGoogleSheets(); // Đồng bộ ngầm lên Cloud
+      }
+
+      function updateExpenseTable() {
+        const tbody = document.getElementById("expense-table-body");
+        const tfoot = document.getElementById("expense-footer");
+        if (!tbody || !tfoot) return;
+
+        tbody.innerHTML = "";
+
+        // Lọc bỏ những dòng đã đánh dấu xóa
+        // (Dùng !! để ép kiểu về boolean, đảm bảo lọc đúng)
+        const activeExpenses = expenses.filter((item) => !item.isDeleted);
+
+        let totalGroup = 0;
+        let individualDebts = {
+          Anh: 0,
+          Linh: 0,
+          Hieu: 0,
+          Chi: 0,
+          Dong: 0,
+          Dung: 0,
+          Hah: 0,
+          Quanh: 0,
+        };
+        let actualPaidFromPocket = {
+          Anh: 0,
+          Linh: 0,
+          Hieu: 0,
+          Chi: 0,
+          Dong: 0,
+          Dung: 0,
+          Hah: 0,
+          Quanh: 0,
+        };
+
+        activeExpenses.forEach((item, indexInActive) => {
+          const originalIndex = expenses.indexOf(item);
+          const amount = parseFloat(item.amount) || 0;
+          totalGroup += amount;
+
+          if (actualPaidFromPocket.hasOwnProperty(item.payer)) {
+            actualPaidFromPocket[item.payer] += amount;
+          }
+
+          const shareCount = item.participants?.length || 1;
+          const perPerson = amount / shareCount;
+
+          if (item.participants) {
+            item.participants.forEach((p) => {
+              if (individualDebts.hasOwnProperty(p)) {
+                individualDebts[p] += perPerson;
+              }
+            });
+          }
+
+          tbody.innerHTML += `
+            <tr class="border-b border-slate-100 group hover:bg-white/40 transition">
+                <td class="py-4 px-2 text-slate-600 text-[10px]">${
+                  indexInActive + 1
+                }</td>
+                <td class="text-xs font-bold text-slate-800">${
+                  formatDate(item.time) || ""
+                }</td>
+                <td class="text-sm font-black text-slate-800">${
+                  item.payer || ""
+                }</td>
+                <td class="text-xs text-slate-500">
+                    <div class="font-medium text-slate-800">${
+                      item.content || ""
+                    }</div>
+                    <div class="text-[10px] text-orange-600 font-bold uppercase">
+                        Cho: ${
+                          item.participants ? item.participants.join(", ") : ""
+                        }
+                    </div>
+                </td>
+                <td class="text-right font-bold text-orange-600">${amount.toLocaleString()}đ</td>
+                <td class="text-center px-4">
+                    <button onclick="deleteExpense(${originalIndex})" class="text-red-400 hover:text-red-600 transition">
+                        <i class="fas fa-trash-alt text-sm"></i>
+                    </button>
+                </td>
+            </tr>`;
+        });
+
+        // Ẩn/Hiện section dựa trên dữ liệu thực tế
+        const section = document.getElementById("expense-section");
+        if (activeExpenses.length === 0) {
+          section.classList.add("hidden");
+        } else {
+          section.classList.remove("hidden");
+        }
+
+        renderFooter(totalGroup, individualDebts, actualPaidFromPocket, tfoot);
+      }
+
+      // Hàm xoá hàng
+      async function deleteExpense(index) {
+        if (confirm("Bạn có xoá mục này khỏi bảng không ???")) {
+          // 1. Xóa hẳn khỏi mảng đang hiển thị
+          expenses.splice(index, 1);
+
+          // 2. Cập nhật giao diện ngay lập tức
+          updateExpenseTable();
+
+          // 3. Ghi đè vào LocalStorage để F5 không bị hiện lại
+          localStorage.setItem("tripExpenses", JSON.stringify(expenses));
+        }
+      }
+
+      // Hàm render footer riêng cho gọn (colspan bây giờ là 5)
+      function renderFooter(
+        totalGroup,
+        individualDebts,
+        actualPaidFromPocket,
+        tfoot,
+      ) {
+        const PAID_BEFORE = 4529112; // Phần đã quyết toán xong
+        const CASH_REMAINING = 4000000; // Tiền mặt đưa Anh cầm
+
+        const allMembers = Object.keys(individualDebts);
+        const friends = allMembers.filter((name) => name !== "Anh");
+
+        // --- PHẦN 1: CHI PHÍ CÁ NHÂN ---
+        let spendingHtml = allMembers
+          .map((name) => {
+            const spent = individualDebts[name] || 0;
+            return `
+        <div class="flex justify-between items-center py-1 border-b border-orange-100 italic">
+            <span class="text-slate-600">${name}:</span>
+            <span class="font-bold text-slate-900">${Math.round(
+              spent,
+            ).toLocaleString()}đ</span>
+        </div>`;
+          })
+          .join("");
+
+        // --- PHẦN 2: ĐỐI SOÁT TÀI CHÍNH ---
+        let settlingHtml = friends
+          .map((name) => {
+            const totalDebt = individualDebts[name] || 0;
+            const paidOut = actualPaidFromPocket[name] || 0;
+
+            // Nợ phát sinh thực tế = Tổng nợ cả tour - 4.5tr đã đóng trước
+            // Nếu tiêu dưới 4.5tr, số này sẽ âm (tức là vẫn còn dư tiền trong quỹ cũ)
+            const currentDebtToCash = totalDebt - PAID_BEFORE;
+
+            // Số dư cuối cùng với Anh:
+            // (4tr đóng thêm) + (Tiền mình đã ứng trả hộ) - (Nợ lạm vào quỹ mặt)
+            const balance = CASH_REMAINING + paidOut - currentDebtToCash;
+
+            const isPositive = balance >= 0;
+            const color = isPositive ? "text-green-400" : "text-red-400";
+            const sign = isPositive ? "+" : "";
+
+            return `
+        <div class="flex justify-between items-center py-3 border-b border-slate-800 px-2">
+            <span class="text-slate-300 font-medium">${name}:</span>
+            <div class="text-right">
+                <span class="font-black ${color} text-lg">${sign}${Math.round(
+                  balance,
+                ).toLocaleString()}đ</span>
+                ${
+                  paidOut > 0
+                    ? `<div class="text-[9px] text-slate-500 italic uppercase">Đã ứng: ${Math.round(
+                        paidOut,
+                      ).toLocaleString()}đ</div>`
+                    : ""
+                }
+            </div>
+        </div>`;
+          })
+          .join("");
+
+        tfoot.innerHTML = `
+        <tr>
+            <td colspan="4" class="py-8 text-right font-serif italic text-2xl text-slate-800 pr-10">Tổng chi cả nhóm:</td>
+            <td colspan="2" class="py-8 text-right px-4">
+                <span class="text-3xl text-orange-600 font-black">${Math.round(
+                  totalGroup,
+                ).toLocaleString()}đ</span>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="6" class="bg-orange-50/50 rounded-[2rem] p-8">
+                <div class="text-[11px] font-black uppercase tracking-[0.2em] text-orange-800 mb-4 text-center italic">Chi phí thực tế mỗi người đã tiêu</div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-2">${spendingHtml}</div>
+            </td>
+        </tr>
+    `;
+      }
+
+      // Hàm play music
+      let autoPlayed = false;
+
+      function tryAutoPlayMusic() {
+        if (autoPlayed) return;
+
+        const music = document.getElementById("bg-music");
+        const disk = document.getElementById("music-disk");
+        const status = document.getElementById("music-status");
+
+        music
+          .play()
+          .then(() => {
+            disk.classList.add("music-playing");
+            status.innerText = "Đang phát nhạc";
+            autoPlayed = true;
+          })
+          .catch(() => {
+            // browser chưa cho → bỏ qua
+          });
+      }
+
+      ["click", "scroll", "touchstart", "keydown"].forEach((evt) => {
+        window.addEventListener(evt, tryAutoPlayMusic, { once: true });
+      });
+
+      // Hàm chuyển đổi link Google Drive
+      function transformDriveUrl(url) {
+        if (!url) return "https://via.placeholder.com/800x600?text=No+Image";
+        if (url.includes("drive.google.com")) {
+          let fileId = "";
+          const matchD = url.match(/\/d\/([^\/]+)/);
+          if (matchD) fileId = matchD[1];
+          const matchId = url.match(/id=([^&]+)/);
+          if (matchId) fileId = matchId[1];
+          if (fileId)
+            return `https://lh3.googleusercontent.com/d/${fileId}=w1000`;
+        }
+        return url;
+      }
+
+      async function fetchHaiphongWeather() {
+        const url =
+          "https://api.open-meteo.com/v1/forecast?latitude=19.8468621&longitude=105.9373992&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m&hourly=temperature_2m,weather_code&timezone=Asia%2FBangkok&forecast_days=2";
+
+        try {
+          const res = await fetch(url);
+          const data = await res.json();
+
+          if (!data || !data.current) return;
+
+          const current = data.current;
+          const temp = Math.round(current.temperature_2m);
+
+          // ===== CURRENT =====
+          document.getElementById("temp-display").innerText = `${temp}°`;
+          document.getElementById("humidity").innerText =
+            `${current.relative_humidity_2m}%`;
+          document.getElementById("wind-speed").innerText =
+            `${Math.round(current.wind_speed_10m)} km/h`;
+
+          // ===== WEATHER CODE MAP (đầy đủ chuẩn WMO) =====
+          const weatherMap = {
+            0: { desc: "Trời quang", icon: "fa-sun", col: "text-orange-400" },
+            1: { desc: "Ít mây", icon: "fa-cloud-sun", col: "text-slate-400" },
+            2: {
+              desc: "Mây rải rác",
+              icon: "fa-cloud-sun",
+              col: "text-slate-400",
+            },
+            3: { desc: "Nhiều mây", icon: "fa-cloud", col: "text-slate-500" },
+            45: { desc: "Sương mù", icon: "fa-smog", col: "text-gray-400" },
+            48: { desc: "Sương mù dày", icon: "fa-smog", col: "text-gray-500" },
+            51: {
+              desc: "Mưa phùn nhẹ",
+              icon: "fa-cloud-drizzle",
+              col: "text-blue-300",
+            },
+            53: {
+              desc: "Mưa phùn",
+              icon: "fa-cloud-drizzle",
+              col: "text-blue-400",
+            },
+            55: {
+              desc: "Mưa phùn nặng",
+              icon: "fa-cloud-rain",
+              col: "text-blue-500",
+            },
+            61: {
+              desc: "Mưa nhẹ",
+              icon: "fa-cloud-rain",
+              col: "text-blue-400",
+            },
+            63: {
+              desc: "Mưa vừa",
+              icon: "fa-cloud-rain",
+              col: "text-blue-500",
+            },
+            65: {
+              desc: "Mưa to",
+              icon: "fa-cloud-showers-heavy",
+              col: "text-blue-600",
+            },
+            80: {
+              desc: "Mưa rào nhẹ",
+              icon: "fa-cloud-showers-heavy",
+              col: "text-blue-400",
+            },
+            81: {
+              desc: "Mưa rào",
+              icon: "fa-cloud-showers-heavy",
+              col: "text-blue-500",
+            },
+            82: {
+              desc: "Mưa rào mạnh",
+              icon: "fa-cloud-showers-heavy",
+              col: "text-blue-600",
+            },
+            95: { desc: "Dông", icon: "fa-bolt", col: "text-yellow-400" },
+          };
+
+          const status = weatherMap[current.weather_code] || {
+            desc: "Bình thường",
+            icon: "fa-cloud-sun",
+            col: "text-slate-400",
+          };
+
+          document.getElementById("weather-desc").innerText = status.desc;
+          document.getElementById("weather-icon").innerHTML =
+            `<i class="fas ${status.icon} ${status.col}"></i>`;
+
+          // ===== ADVICE =====
+          let advice = "Thời tiết đẹp, hợp đi dạo bờ biển Hải Tiến thôi!!!";
+          if (temp < 15) advice = "Lạnh sâu, nên mặc áo khoác dày!";
+          else if (temp < 20)
+            advice = "Se lạnh biển Hải Tiến, cardigan/blazer hợp!!!";
+          else if (temp > 30) advice = "Nóng rồi, đồ mỏng + chống nắng nhé!";
+          else if (current.weather_code >= 61) advice = "Có mưa, nhớ mang ô ☔";
+
+          document.getElementById("weather-advice").innerHTML =
+            `<i class="fas fa-magic"></i> <span>${advice}</span>`;
+
+          // ===== HOURLY 12H =====
+          const hourlyBox = document.getElementById("hourly-forecast");
+          hourlyBox.innerHTML = "";
+
+          const now = new Date();
+          const currentHourIndex = data.hourly.time.findIndex((t) => {
+            return new Date(t).getHours() === now.getHours();
+          });
+
+          const startIndex = currentHourIndex >= 0 ? currentHourIndex : 0;
+
+          for (let i = startIndex; i < startIndex + 12; i++) {
+            if (!data.hourly.time[i]) break;
+
+            const time = new Date(data.hourly.time[i]);
+            const hourLabel =
+              i === startIndex ? "Bây giờ" : `${time.getHours()}h`;
+            const hTemp = Math.round(data.hourly.temperature_2m[i]);
+            const hCode = data.hourly.weather_code[i];
+
+            let hIcon = "fa-sun";
+            if (hCode >= 1 && hCode <= 3) hIcon = "fa-cloud-sun";
+            if (hCode >= 51) hIcon = "fa-cloud-rain";
+            if (hCode >= 80) hIcon = "fa-cloud-showers-heavy";
+            if (hCode >= 95) hIcon = "fa-bolt";
+
+            hourlyBox.innerHTML += `
+        <div class="flex flex-col items-center gap-3 min-w-[55px] group">
+          <span class="text-[10px] font-bold text-slate-400 uppercase">${hourLabel}</span>
+          <i class="fas ${hIcon} text-slate-500 text-base"></i>
+          <span class="text-base font-serif italic font-bold text-slate-800">${hTemp}°</span>
+        </div>
+      `;
+          }
+        } catch (e) {
+          console.error("Weather error:", e);
+        }
+      }
+
+      // Gọi hàm khi trang load
+      fetchHaiphongWeather();
+
+      const initialData = {
+        total: "2,035,000 VNĐ",
+        footerImg:
+          "https://res.cloudinary.com/dpqknp0mo/image/upload/v1776011850/z7718796715840_222e1db2631455b6b1debc1a84f46f7c_azgghc.jpg",
+        team: {
+          leader: {
+            name: "Anh Lee",
+            role: "Trưởng đoàn",
+            img: "https://res.cloudinary.com/dpqknp0mo/image/upload/v1776096013/z7612041873632_9b5035fb079ec2ca7d355f41463f8ded_s89k6q.jpg?w=1000",
+          },
+          members: [
+            {
+              name: "Krixi Truong",
+              role: "Đang bầu",
+              img: "https://res.cloudinary.com/dpqknp0mo/image/upload/v1776096517/533376956_3019465328215283_2127406109352332855_n_cf9voo.jpg?w=1000",
+            },
+            {
+              name: "Hái Thứ Hiếu",
+              role: "Chưa đóng tiền",
+              img: "https://res.cloudinary.com/dpqknp0mo/image/upload/v1776097308/asdasdv1_8a79c6.jpg?w=1000",
+            },
+            {
+              name: "Chi Pu",
+              role: "Chưa đóng tiền",
+              img: "https://res.cloudinary.com/dpqknp0mo/image/upload/v1776096788/vxcvm_dcbd86.jpg?w=1000",
+            },
+            {
+              name: "Dunee Nguyen",
+              role: "Đã đóng tiền",
+              img: "https://res.cloudinary.com/dpqknp0mo/image/upload/v1776096527/641311035_2379481299222886_2687379178758511376_n_plaomh.jpg?w=1000",
+            },
+            {
+              name: "Doong Lee",
+              role: "Đã đóng tiền",
+              img: "https://res.cloudinary.com/dpqknp0mo/image/upload/v1776096882/nhnhf_44edfb.jpg?w=1000",
+            },
+
+            {
+              name: "Quỳnh Anh Tripus",
+              role: "Chưa đóng tiền",
+              img: "https://res.cloudinary.com/dpqknp0mo/image/upload/v1776097006/uyrsva_881e93.jpg?w=1000",
+            },
+            {
+              name: "Hanna Do",
+              role: "Chưa đóng tiền",
+              img: "https://res.cloudinary.com/dpqknp0mo/image/upload/v1776096527/548468774_3947706495450080_5231643930982362258_n_kw7dds.jpg?w=1000",
+            },
+          ],
+        },
+        categories: [],
+        days: [
+          {
+            day: "Ngày 1",
+            date: "26/04/2026",
+            title: "Khởi hành",
+            activities: [
+              {
+                time: "07:00",
+                icon: "fa-car",
+                title: "Đi xe limo Hà Nội - Hải Tiến",
+                note: "Limo giường nằm",
+                detail:
+                  "Nhà xe Vân Anh - Di chuyển từ Hà Nội về Flamingo Ibiza Hải Tiến",
+                cost: "280.000",
+                image:
+                  "https://cms.mobihome.vn/Data/119/Poster/336911375_774981660969328_2771254985534238244_n.jpg",
+                map: "https://maps.app.goo.gl/kUNJZHfdmwy8a1uK6",
+              },
+              {
+                time: "10:30 - 12:00",
+                icon: "fa-car",
+                title: "Ăn trưa tại Flamingo Ibiza Hải Tiến",
+                note: "Ăn xong rồi về khách sạn lấy phòng",
+                detail: "Đi ăn trưa và nghỉ ngơi",
+                cost: "0",
+                image:
+                  "https://res.cloudinary.com/dpqknp0mo/image/upload/v1776097191/Tr1_seimmp.jpg",
+                map: "https://maps.app.goo.gl/kUNJZHfdmwy8a1uK6",
+              },
+              {
+                time: "16:00 - 18:30",
+                icon: "fa-car-side",
+                title: "Swimming",
+                note: "Tại Flamingo hoặc ngoài biển",
+                detail: "Nhớ mang bikini và boxer để bơi",
+                cost: "75.000",
+                image:
+                  "https://bizweb.dktcdn.net/100/562/154/files/flamingo-hai-tien-13-jpg.jpg?v=1753087401847",
+                map: "https://maps.app.goo.gl/inXsJ3NPxhD3amVu7",
+              },
+              {
+                time: "19:00 - 20:30",
+                icon: "fa-car-side",
+                title: "Ăn tối ở Nhà Hàng Lê Gia",
+                note: "Chỉ ăn Hải Sản thôi",
+                detail: "Di chuyển bằng xe điện",
+                cost: "300.000",
+                image:
+                  "https://bizweb.dktcdn.net/100/562/154/files/nha-hang-hai-san-hai-tien-le-gia-1-jpg.jpg?v=1754377293110",
+                map: "https://maps.app.goo.gl/inXsJ3NPxhD3amVu7",
+              },
+              {
+                time: "21:00 - 24:00",
+                icon: "fa-car-side",
+                title: "Đi chơi ở phố đi bộ",
+                note: "Cứ mây lang thang thôi",
+                detail: "Di chuyển bằng căng hải",
+                cost: "0",
+                image:
+                  "https://spcdn.shortpixel.ai/spio/ret_img,q_orig,to_webp,s_webp/flamingoresorts.vn/wp-content/uploads/2025/04/474382679_122174373068111410_8026583465076489911_n.jpg",
+                map: "https://maps.app.goo.gl/kUNJZHfdmwy8a1uK6",
+              },
+            ],
+          },
+          {
+            day: "Ngày 2",
+            date: "27/04/2026",
+            title: "Bình minh ơi dậy chưa",
+            activities: [
+              {
+                time: "07:00 - 08:00",
+                type: "eat",
+                icon: "fa-car-side",
+                title: "Ăn sáng",
+                note: "Tại nhà hàng trong Flamingo Hải Tiến",
+                detail: "",
+                cost: "0",
+                image:
+                  "https://bizweb.dktcdn.net/100/562/154/files/flamingo-hai-tien-88-jpg.jpg?v=1754377293047",
+                map: "https://maps.app.goo.gl/kUNJZHfdmwy8a1uK6",
+              },
+              {
+                time: "08:30 - 10:30",
+                type: "eat",
+                icon: "fa-car-side",
+                title: "Chụp choẹt ảnh nhóm",
+                note: "Vào Lalamingo Park",
+                detail: "Di chuyển bằng Căng hải",
+                cost: "0",
+                image:
+                  "https://bizweb.dktcdn.net/100/562/154/files/flamingo-hai-tien-99100-jpg.jpg?v=1753087401923",
+                map: "https://maps.app.goo.gl/kUNJZHfdmwy8a1uK6",
+              },
+              {
+                time: "11:00 - 12:00",
+                icon: "fa-car-side",
+                title: "Checkout",
+                note: "Ăn trưa xong rồi về Hà Nội nghỉ lễ tiếp thôi",
+                detail: "Nhớ đừng quên gì nhé",
+                cost: "280.000",
+                image:
+                  "https://res.cloudinary.com/dpqknp0mo/image/upload/v1776097191/Tr2_gd2e9q.jpg?w=1000",
+                map: "https://maps.app.goo.gl/kUNJZHfdmwy8a1uK6",
+              },
+            ],
+          },
+        ],
+      };
+
+      function toggleEditor() {
+        document.body.classList.toggle("is-editing");
+      }
+
+      function toggleMusic() {
+        const music = document.getElementById("bg-music");
+        const disk = document.getElementById("music-disk");
+        const status = document.getElementById("music-status");
+        if (music.paused) {
+          music.play();
+          disk.classList.add("music-playing");
+          status.innerText = "Đang phát nhạc";
+        } else {
+          music.pause();
+          disk.classList.remove("music-playing");
+          status.innerText = "Đã dừng nhạc";
+        }
+      }
+
+      function render(data) {
+        try {
+          // Team
+          let teamHtml = `
+                    <div class="flex flex-col items-center group">
+                        <div class="w-36 h-36 md:w-48 md:h-48 rounded-full border-4 border-green-800 p-1.5 mb-5 shadow-2xl bg-white overflow-hidden">
+                            <img src="${transformDriveUrl(
+                              data.team.leader.img,
+                            )}" class="w-full h-full object-cover rounded-full">
+                        </div>
+                        <h3 class="font-bold text-slate-800 text-xl mb-1">${
+                          data.team.leader.name
+                        }</h3>
+                        <span class="text-[10px] bg-green-800 text-white px-4 py-1.5 rounded-full uppercase font-black">${
+                          data.team.leader.role
+                        }</span>
+                    </div>
+                `;
+          data.team.members.forEach((member) => {
+            teamHtml += `
+                        <div class="flex flex-col items-center group">
+                            <div class="w-24 h-24 md:w-28 md:h-28 rounded-full border-2 border-white p-1 mb-4 shadow-xl bg-white overflow-hidden">
+                                <img src="${transformDriveUrl(
+                                  member.img,
+                                )}" class="w-full h-full object-cover rounded-full filter transition-all duration-700">
+                            </div>
+                            <h4 class="font-bold text-slate-700 text-sm mb-1">${
+                              member.name
+                            }</h4>
+                            <span class="text-[9px] text-slate-500 uppercase font-bold">${
+                              member.role
+                            }</span>
+                        </div>
+                    `;
+          });
+          document.getElementById("team-container").innerHTML = teamHtml;
+
+          // Stats
+          document.getElementById("hero-stats").innerHTML = `
+                    <div class="bg-white/60 backdrop-blur-md p-6 rounded-[2rem] border border-white/50 shadow-sm"><span class="text-[10px] text-slate-500 font-black uppercase tracking-widest mb-3 block">Ngân sách</span><p class="text-2xl font-serif font-bold text-green-800 italic">${
+                      data.total
+                    }</p></div>
+                    <div class="bg-white/60 backdrop-blur-md p-6 rounded-[2rem] border border-white/50 shadow-sm"><span class="text-[10px] text-slate-500 font-black uppercase tracking-widest mb-3 block">Khách</span><p class="text-2xl font-bold text-slate-800">${
+                      1 + data.team.members.length
+                    } Người</p></div>
+                    <div class="bg-white/60 backdrop-blur-md p-6 rounded-[2rem] border border-white/50 shadow-sm"><span class="text-[10px] text-slate-500 font-black uppercase tracking-widest mb-3 block">Lịch trình</span><p class="text-2xl font-bold text-slate-800">2 Ngày 1 Đêm</p></div>
+                    <div class="bg-green-800/90 backdrop-blur-md p-6 rounded-[2rem] shadow-xl text-white"><span class="text-[10px] text-green-300 font-black uppercase tracking-widest mb-3 block">Khởi hành</span><p class="text-2xl font-serif italic">${
+                      data.days[0].date
+                    }</p></div>
+                `;
+
+          // Tabs & Activities
+          let tabsHtml = "",
+            contentHtml = "";
+          data.days.forEach((day, idx) => {
+            tabsHtml += `<button onclick="document.getElementById('day-${idx}').scrollIntoView({behavior:'smooth'})" class="flex-shrink-0 px-8 py-3.5 rounded-2xl bg-white/60 backdrop-blur-md border border-white/40 text-slate-600 font-bold text-sm hover:bg-green-800 hover:text-white transition-all">${day.day}</button>`;
+            let activitiesHtml = day.activities
+              .map(
+                (act) => `
+                        <div class="bg-white/70 backdrop-blur-md rounded-[3rem] overflow-hidden border border-white/50 shadow-sm activity-card flex flex-col md:flex-row">
+                            <div class="w-full md:w-80 h-64 md:h-auto overflow-hidden"><img src="${transformDriveUrl(
+                              act.image,
+                            )}" class="w-full h-full object-cover"></div>
+                            <div class="flex-1 p-10">
+                                <div class="flex items-center gap-5 mb-5">
+                                    <span class="px-5 py-2 rounded-full text-xs font-black bg-orange-600 text-white shadow-md">${
+                                      act.time
+                                    }</span>
+                                    <i class="fas ${
+                                      act.icon
+                                    } text-2xl text-green-800"></i>
+                                <a
+                                    href="${act.map}"
+                                    class="bg-green-800/90 hover:bg-green-900 text-white px-6 py-2 rounded-2xl text-xs font-bold transition-all flex items-center gap-2 self-center"
+                                >
+                                    <i class="fas fa-directions"></i> Map điểm đến
+                                </a>
+                                </div>
+                                <h4 class="text-2xl font-bold text-slate-900 mb-3">${
+                                  act.title
+                                }</h4>
+                                <p class="text-slate-600 text-sm mb-3">${
+                                  act.note || ""
+                                }</p>
+                                <p class="text-slate-400 text-xs italic border-l-4 border-green-800/20 pl-4">${
+                                  act.detail || ""
+                                }</p>
+                                <div class="mt-8 pt-6 border-t border-slate-200/50 text-green-800 font-bold">
+                                    <span class="bg-green-100/50 px-5 py-2 rounded-xl"><i class="fas fa-coins mr-3 opacity-50"></i>${
+                                      act.cost
+                                    } VNĐ</span>
+                                </div>
+                            </div>
+                        </div>
+                    `,
+              )
+              .join("");
+            contentHtml += `<section id="day-${idx}" class="scroll-mt-48"><div class="mb-10 pl-6 border-l-[6px] border-green-800"><h2 class="font-serif text-5xl text-slate-900 italic font-bold">${day.day}: ${day.title}</h2></div><div class="grid gap-12">${activitiesHtml}</div></section>`;
+          });
+
+          tabsHtml += `
+    <button onclick="scrollToExpense()" class="flex-shrink-0 px-8 py-3.5 rounded-2xl bg-orange-100 border border-orange-200 text-orange-700 font-black text-sm hover:bg-orange-600 hover:text-white transition-all shadow-sm">
+        <i class="fas fa-wallet mr-2"></i>Chi tiêu thực
+    </button>
+`;
+
+          document.getElementById("day-tabs").innerHTML = tabsHtml;
+          document.getElementById("itinerary-list").innerHTML = contentHtml;
+
+          // Budget & Footer
+          document.getElementById("budget-grid").innerHTML = data.categories
+            .map(
+              (cat) => `
+                    <div class="p-8 rounded-[2.5rem] border border-white/50 bg-white/40 backdrop-blur-sm">
+                        <div class="w-14 h-14 rounded-2xl bg-green-800 shadow-lg flex items-center justify-center text-white mb-6"><i class="fas ${cat.icon} text-2xl"></i></div>
+                        <h5 class="font-bold text-slate-800 text-xl mb-2">${cat.name}</h5>
+                        <p class="text-green-800 font-black text-2xl mb-3">${cat.amount}</p>
+                        <p class="text-slate-500 text-sm">${cat.desc}</p>
+                    </div>
+                `,
+            )
+            .join("");
+          document.getElementById("total-cost-display").innerText =
+            "~ " + data.total;
+          document.getElementById("footer-image").src = transformDriveUrl(
+            data.footerImg,
+          );
+        } catch (e) {
+          console.error(e);
+        }
+      }
+
+      function scrollToExpense() {
+        const section = document.getElementById("expense-section");
+        if (section) {
+          // Hiện bảng nếu đang bị ẩn
+          section.classList.remove("hidden");
+          // Cuộn xuống mượt mà
+          section.scrollIntoView({ behavior: "smooth", block: "start" });
+
+          // Hiệu ứng "highlight" nhẹ để người dùng biết đã cuộn tới nơi
+          section.classList.add("ring-2", "ring-orange-500", "ring-offset-4");
+          setTimeout(() => {
+            section.classList.remove(
+              "ring-2",
+              "ring-orange-500",
+              "ring-offset-4",
+            );
+          }, 2000);
+        }
+      }
+
+      // ===== FORMAT TIỀN INPUT =====
+      document.addEventListener("DOMContentLoaded", () => {
+        const amountInput = document.getElementById("ex-amount");
+        if (!amountInput) return;
+
+        amountInput.addEventListener("input", (e) => {
+          let raw = e.target.value.replace(/[^\d]/g, "");
+
+          if (!raw) {
+            e.target.value = "";
+            return;
+          }
+
+          e.target.value = Number(raw).toLocaleString("vi-VN");
+        });
+      });
+
+      const editor = document.getElementById("json-input");
+      editor.value = JSON.stringify(initialData, null, 4);
+      editor.addEventListener("input", (e) => {
+        try {
+          render(JSON.parse(e.target.value));
+        } catch (err) {}
+      });
+      render(initialData);
+
+      function goHome() {
+        window.location.href = "index.html";
+      }
+    </script>
+  </body>
+</html>
